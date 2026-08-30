@@ -1,3 +1,4 @@
+import {Link} from 'react-router-dom'
 
 function leftSide(){
    return (
@@ -15,9 +16,12 @@ function leftSide(){
                 </h2>
                 <p className="mt-2 text-sm text-gray-400">
                    Not a member?{' '}
-                   <a href="#" className="font-medium text-indigo-400 hover:text-indigo-300">
-                      Join
-                   </a>
+                   <Link
+                       to="/register"
+                       className="font-medium text-indigo-400 hover:text-indigo-300"
+                   >
+                      Register
+                   </Link>
                 </p>
              </div>
 
