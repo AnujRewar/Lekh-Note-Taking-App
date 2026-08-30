@@ -1,15 +1,19 @@
 package com.pm.notes_service.User.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
-
+@Entity
 @Data
 @Builder
 @Table(name="users")
-public class User {
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -20,5 +24,8 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private boolean isActive;
 
 }

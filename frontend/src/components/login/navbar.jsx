@@ -1,6 +1,5 @@
 import React from 'react'
-import Contact from './contact.jsx';
-import About from './about_section/about.jsx';
+
 function Navbar(){
     return (
         <nav className="h-20 bg-black text-white flex items-center justify-between px-8 lg:px-12">
