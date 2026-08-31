@@ -31,4 +31,8 @@ public class UserEntity {
     @Column(nullable = false)
     private boolean isActive;
 
+    @OneToOne(mappedBy = "user")
+    private ForgetPassword forgetPassword;
+
+
 }
