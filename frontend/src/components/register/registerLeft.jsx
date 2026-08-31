@@ -1,10 +1,43 @@
 import {Link} from "react-router-dom";
 import {useState} from "react";
+import api from "../../api/api.jsx";
 
 function RegisterLeft() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [fullName, setFullName] = useState("");
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState("");
+
+    const handleRegister = async(e) =>{
+        e.preventDefault();
+
+        setError("");
+        try{
+
+            if(password !== confirmPassword){
+                setError("Password do not match")
+                return;
+            }
+            const registerResponse=await api.post(
+                "/auth/register",
+                {
+                    fullName:fullName,
+                    username: username,
+                    password: password,
+                }
+            );
+            console.log(registerResponse.data);
+        }
+        catch(err){
+            console.log(err);
+            setError("Registration failed. Please try again.");
+        }
+    }
     return (
+
         <div className=" mt-9 h-auto flex items-center px-10 lg:px-20">
 
             <div className="w-full max-w-md">
@@ -29,9 +62,14 @@ function RegisterLeft() {
 
 
                 {/* Form */}
-                <form className="mt-8 space-y-6">
+                <form onSubmit={handleRegister} className="mt-8 space-y-6">
 
                     {/* Name */}
+                    {error && (
+                        <div className="mb-4 rounded-md border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                            {error}
+                        </div>
+                    )}
                     <div>
 
                         <label
@@ -46,6 +84,8 @@ function RegisterLeft() {
                             type="text"
                             placeholder="Your name"
                             required
+                            value={fullName}
+                            onChange={(e)=>setFullName(e.target.value)}
                             className=" w-full bg-transparent
                                        border-b border-zinc-700
                                        px-0 py-3
@@ -74,6 +114,8 @@ function RegisterLeft() {
                             type="email"
                             placeholder="you@example.com"
                             required
+                            value={username}
+                            onChange={(e)=>setUsername(e.target.value)}
                             className="mt-2 w-full bg-transparent
                                        border-b border-zinc-700
                                        px-0 py-3
@@ -103,6 +145,8 @@ function RegisterLeft() {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Create a password"
                                 required
+                                value={password}
+                                onChange={(e)=>setPassword(e.target.value)}
                                 className="w-full bg-transparent
                        border-b border-zinc-700
                        px-0 py-3 pr-12
@@ -143,6 +187,8 @@ function RegisterLeft() {
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="Repeat your password"
                             required
+                            value={confirmPassword}
+                            onChange={(e)=>setConfirmPassword(e.target.value)}
                             className="w-full bg-transparent
                                        border-b border-zinc-700
                                        px-0 py-3 pr-12

@@ -1,3 +1,4 @@
+
 function leftAbout() {
     return (
         <div className="w-full">

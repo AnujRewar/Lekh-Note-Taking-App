@@ -41,6 +41,7 @@ public class AuthController {
 
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(registerRequest.getUsername());
+        userEntity.setFullName(registerRequest.getFullName());
         userEntity.setPassword(passwordEncoder.encode(registerRequest.getPassword()));//encode the received password
         userEntity.setActive(true);
         userRepository.save(userEntity);

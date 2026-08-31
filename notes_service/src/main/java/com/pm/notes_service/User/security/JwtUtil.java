@@ -7,17 +7,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.UUID;
+
 
 @Component
 public class JwtUtil {
 
     //using secure key in production (load from application.properties)
     private final String SECRET_KEY = "ThisIsASuperSecretKeyThatNeedsToBeAtLeast32BytesLong!";
-    private final Key key= Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    private final SecretKey key= Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     private final long EXPIRATION_TIME = 864_000_000;
 
     public String generateToken(String username){
@@ -31,11 +32,11 @@ public class JwtUtil {
     }
 
     public Claims verifySignatureAndExtractAllClaims(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(getKey())
+        return Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public String extractUsername(String token){
@@ -50,7 +51,8 @@ public class JwtUtil {
        return getExpiration(token).before(new Date());
     }
     //required for validating incoming jwt tokens
-    public Key getKey(){
+
+    public SecretKey getKey(){
         return key;
     }
 
