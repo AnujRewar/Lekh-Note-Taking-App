@@ -20,16 +20,16 @@ public class UserService implements UserDetailsService {
 
     public final UserRepository userRepository;
 
-    public UserEntity getUserFromUsername(String username){
-        return userRepository.findByUsernameAndIsActive(username,true)
+    public UserEntity getUserFromUsername(String email){
+        return userRepository.findByEmailAndIsActive(email,true)
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-       UserEntity user = getUserFromUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+       UserEntity user = getUserFromUsername(email);
        return User.builder()
-               .username(user.getUsername())
+               .username(user.getEmail())
                .password(user.getPassword())
                .authorities(Collections.emptyList())
                .build();

@@ -1,5 +1,5 @@
 
-function leftAbout() {
+function LeftAbout() {
     return (
         <div className="w-full">
             <p className="text-sm uppercase tracking-[0.3em] text-indigo-400 mb-2">
@@ -27,4 +27,4 @@ function leftAbout() {
     );
 }
 
-export default leftAbout;
+export default LeftAbout;

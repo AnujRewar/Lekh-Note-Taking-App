@@ -1,41 +1,59 @@
-import {Link} from "react-router-dom";
+import {Link,useNavigate} from "react-router-dom";
 import {useState} from "react";
 import api from "../../api/api.jsx";
+
 
 function RegisterLeft() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [fullName, setFullName] = useState("");
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleRegister = async(e) =>{
+    const navigate = useNavigate();
+
+    const handleRegister = async(e) => {
         e.preventDefault();
 
         setError("");
-        try{
+        try {
 
-            if(password !== confirmPassword){
+            if (password !== confirmPassword) {
                 setError("Password do not match")
                 return;
             }
-            const registerResponse=await api.post(
-                "/auth/register",
+            setLoading(true);
+
+            const registerResponse = await api.post(
+                "/auth/register",   //during registration only /verifOtp api is hit
                 {
-                    fullName:fullName,
-                    username: username,
+                    fullName: fullName,
+                    email: email,
                     password: password,
                 }
             );
             console.log(registerResponse.data);
-        }
-        catch(err){
-            console.log(err);
-            setError("Registration failed. Please try again.");
+            navigate("/verify-email",{
+                state:{
+                    email:email,
+                    flow:"register",
+                }
+            })
+        } catch (error) {
+            console.log(error);
+            // Check if the backend sent a specific error message map
+            if (error.response?.data?.error) {
+                setError(error.response.data.error);
+            } else {
+                setError("Registration failed. Please try again.");
+            }
+            setLoading(false);
         }
     }
+
     return (
 
         <div className=" mt-9 h-auto flex items-center px-10 lg:px-20">
@@ -114,8 +132,8 @@ function RegisterLeft() {
                             type="email"
                             placeholder="you@example.com"
                             required
-                            value={username}
-                            onChange={(e)=>setUsername(e.target.value)}
+                            value={email}
+                            onChange={(e)=>setEmail(e.target.value)}
                             className="mt-2 w-full bg-transparent
                                        border-b border-zinc-700
                                        px-0 py-3
@@ -218,17 +236,15 @@ function RegisterLeft() {
                     {/* Button */}
                     <button
                         type="submit"
-                        className="w-full mt-4 py-3
-                                   rounded-md
-                                   bg-indigo-500
-                                   text-sm font-medium text-white
-                                   hover:bg-indigo-400
-                                   hover:-translate-y-0.5
-                                   transition-all duration-300"
+                        disabled={loading}
+                        className={`w-full mt-4 py-3 rounded-md text-sm font-medium text-white transition-all duration-300 ${
+                            loading
+                                ? "bg-indigo-400/50 cursor-not-allowed"
+                                : "cursor-pointer bg-indigo-500 hover:bg-indigo-400 hover:-translate-y-0.5"
+                        }`}
                     >
-                        Create account
+                        {loading ? "Creating account..." : "Create account"}
                     </button>
-
                 </form>
 
 

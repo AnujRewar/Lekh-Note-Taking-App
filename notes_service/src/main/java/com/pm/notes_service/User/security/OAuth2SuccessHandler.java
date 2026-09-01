@@ -25,14 +25,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String username=oAuth2User.getAttribute("email");
+        String email=oAuth2User.getAttribute("email");
         String name=oAuth2User.getAttribute("name");
 
 
-        UserEntity userEntity=userRepository.findByUsernameAndIsActive(username,true).orElseGet(
+        UserEntity userEntity=userRepository.findByEmailAndIsActive(email,true).orElseGet(
                 ()->{
                     UserEntity userEntity1=new UserEntity();
-                    userEntity1.setUsername(username);
+                    userEntity1.setEmail(email);
                     userEntity1.setFullName(name);
                     userEntity1.setActive(true);
                     userEntity1.setPassword(java.util.UUID.randomUUID().toString());
@@ -42,7 +42,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         );
 
 
-        String token= jwtUtil.generateToken(username);
+        String token= jwtUtil.generateToken(email);
         String redirectUrl=  "http://localhost:5173/oauth-success?token=" + token;
 
         getRedirectStrategy().sendRedirect(
