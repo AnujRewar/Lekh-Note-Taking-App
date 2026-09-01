@@ -2,10 +2,11 @@ import {Link} from 'react-router-dom'
 import api from '../../api/api.jsx'
 import {useState} from "react";
 
-function leftSide(){
-   const[username,setUsername]=useState('');
+function LeftSide(){
+   const[email,setEmail]=useState('');
    const[password,setPassword]=useState('');
    const[error,setError]=useState('');
+   const [showPassword, setShowPassword] = useState(false);
 
    const handleLogin = async(e)=>{
     e.preventDefault(); //to avoid complete page reload
@@ -13,7 +14,7 @@ function leftSide(){
          const loginResponse = await api.post(
              "/auth/authenticate",
              {
-                username:username,
+                email:email,
                 password:password
              }
          );
@@ -74,8 +75,8 @@ function leftSide(){
                              type="email"
                              autoComplete="email"
                              required
-                             value={username}
-                             onChange={(e)=>setUsername(e.target.value)}
+                             value={email}
+                             onChange={(e)=>setEmail(e.target.value)}
                              className="appearance-none block w-full px-3 py-2 border border-gray-700 bg-gray-800 rounded-md shadow-sm placeholder-gray-500 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                          />
                       </div>
@@ -83,20 +84,32 @@ function leftSide(){
 
                    {/* Password Input */}
                    <div>
-                      <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+                      <label
+                          htmlFor="password"
+                          className="block text-sm font-medium text-gray-300"
+                      >
                          Password
                       </label>
-                      <div className="mt-1">
+
+                      <div className="mt-1 relative">
                          <input
                              id="password"
                              name="password"
-                             type="password"
+                             type={showPassword ? "text" : "password"}
                              autoComplete="current-password"
                              required
                              value={password}
-                             onChange={(e)=>setPassword(e.target.value)}
+                             onChange={(e) => setPassword(e.target.value)}
                              className="appearance-none block w-full px-3 py-2 border border-gray-700 bg-gray-800 rounded-md shadow-sm placeholder-gray-500 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                          />
+
+                         <button
+                             type="button"
+                             onClick={() => setShowPassword(!showPassword)}
+                             className="mr-2  cursor-pointer absolute right-0 top-1/2 -translate-y-1/2 text-sm text-zinc-500 hover:text-indigo-400 transition-colors"
+                         >
+                            {showPassword ? "Hide" : "Show"}
+                         </button>
                       </div>
                    </div>
 
@@ -115,9 +128,9 @@ function leftSide(){
                       </div>
 
                       <div className="text-sm">
-                         <a href="#" className="font-medium text-indigo-400 hover:text-indigo-300">
+                         <Link to="/insert-email" className="font-medium text-indigo-400 hover:text-indigo-300">
                             Forgot password?
-                         </a>
+                         </Link>
                       </div>
                    </div>
 
@@ -125,7 +138,7 @@ function leftSide(){
                    <div>
                       <button
                           type="submit"
-                          className="w-full flex justify-center py-2 px-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          className=" cursor-pointer w-full flex justify-center py-2 px-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
                          Sign in
                       </button>
@@ -202,4 +215,4 @@ function leftSide(){
    )
 }
 
-export default leftSide;
+export default LeftSide;

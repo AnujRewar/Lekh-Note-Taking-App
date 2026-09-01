@@ -11,18 +11,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
-    Optional<UserEntity> findByUsernameAndIsActive(String username, boolean isActive);
-    Optional<UserEntity> findByUsername(String username);
+    Optional<UserEntity> findByEmailAndIsActive(String email, boolean active);
+    Optional<UserEntity> findByEmail(String email);
 
     @Modifying
     @Transactional
     @Query("""
     UPDATE UserEntity u
-    SET u.password = :newPassword
-    WHERE u.username = :username
+    SET u.password = :password
+    WHERE u.email = :email
 """)
-    void updatePasswordByUsername(
-            @Param("username") String username,
-            @Param("newPassword") String newPassword
+    void updatePasswordByEmail(
+            @Param("email") String email,
+            @Param("password") String password
     );
 }

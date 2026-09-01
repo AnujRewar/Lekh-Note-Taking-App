@@ -1,7 +1,7 @@
 import React from 'react';
 import img1 from './images/login1.jpg';
 
-function rightSide(){
+function RightSide(){
 return (
     <div className="relative w-full h-full bg-zinc-950 flex items-center justify-center overflow-hidden">
 
@@ -50,4 +50,4 @@ return (
 
 );
 }
-export default rightSide;
+export default RightSide;
