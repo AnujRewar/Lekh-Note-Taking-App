@@ -1,9 +1,9 @@
 import React from 'react'
-import Navbar from "./navbar.jsx";
-import LeftSide from "./leftSide.jsx";
-import RightSide from "./rightSide.jsx";
-import About from "./about_section/about.jsx";
-import Contact from "./contact.jsx";
+import Navbar from "./Navbar.jsx";
+import LeftSide from "./LeftSide.jsx";
+import RightSide from "./RightSide.jsx";
+import About from "./about_section/About.jsx";
+import Contact from "./Contact.jsx";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 function Login(props){

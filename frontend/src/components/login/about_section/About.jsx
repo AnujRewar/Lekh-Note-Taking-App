@@ -1,5 +1,5 @@
-import AboutLeft from "./leftAbout.jsx";
-import AboutRight from "./rightAbout.jsx";
+import AboutLeft from "./LeftAbout.jsx";
+import AboutRight from "./RightAbout.jsx";
 
 function About() {
     return (

@@ -1,4 +1,4 @@
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import api from '../../api/api.jsx'
 import {useState} from "react";
 
@@ -7,6 +7,7 @@ function LeftSide(){
    const[password,setPassword]=useState('');
    const[error,setError]=useState('');
    const [showPassword, setShowPassword] = useState(false);
+   const navigate = useNavigate();
 
    const handleLogin = async(e)=>{
     e.preventDefault(); //to avoid complete page reload
@@ -18,7 +19,15 @@ function LeftSide(){
                 password:password
              }
          );
+
          console.log(loginResponse.data);
+         setTimeout(()=>{
+            navigate("/dashboard",{
+               state:{
+                  email:email
+               }
+            });
+         })
       }
       catch(err){
          if(err.response?.status === 401){

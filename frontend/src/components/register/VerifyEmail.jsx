@@ -28,7 +28,7 @@ function VerifyEmail(){
             });
             setMessage("OTP Verified! Redirecting to Login Page ...");
             setTimeout(() =>{
-                navigate("/",{ state:{email:email}});
+                navigate("/dashboard",{ state:{email:email}});
             },1500);
         }
         catch(error){
