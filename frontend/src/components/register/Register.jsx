@@ -1,6 +1,6 @@
 import React from "react";
-import RegisterLeft from "./registerLeft.jsx";
-import RegisterRight from "./registerRight.jsx";
+import RegisterLeft from "./RegisterLeft.jsx";
+import RegisterRight from "./RegisterRight.jsx";
 
 function Register() {
     console.log("Register updated");

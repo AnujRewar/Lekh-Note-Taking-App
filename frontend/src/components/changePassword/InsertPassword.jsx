@@ -24,10 +24,10 @@ function InsertPassword() {
         setError("");
         setMessage("");
 
-        // if (password !== repeatPassword) {
-        //     setError("Passwords do not match");
-        //     return;
-        // }
+        if (password !== repeatPassword) {
+            setError("Passwords do not match");
+            return;
+        }
 
         setLoading(true);
 
@@ -40,7 +40,7 @@ function InsertPassword() {
 
             setMessage("Password updated successfully! Redirecting to login...");
             setTimeout(() => {
-                navigate("/");
+                navigate("/dashboard");
             }, 2000);
         } catch (err) {
             if (err.response?.data?.error) {
