@@ -36,6 +36,8 @@ function RegisterLeft() {
                 }
             );
             console.log(registerResponse.data);
+            localStorage.setItem("user_name", fullName);   //storing in browser's db
+            localStorage.setItem("user_email", email);    // storing email in browser's db
             navigate("/verify-email",{
                 state:{
                     email:email,

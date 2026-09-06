@@ -1,53 +1,77 @@
-import {useEffect, useState} from "react";
-import {Link, useLocation, useNavigate} from "react-router-dom";
-import LeftSide from "../login/LeftSide.jsx";
+import { useEffect, useState } from "react";
 import LeftSideBar from "./LeftSideBar.jsx";
 import NoteCardGrid from "./NoteCardGrid.jsx";
-import SearchBar from "./SearchBar.jsx";
-function Dashboard() {
+import DeleteFolderModal from "./folderOnDashboard/DeleteFolderModal.jsx";
 
+export default function Dashboard() {
+    const [notebooks, setNotebooks] = useState(() => {
+        const saved = localStorage.getItem("user_notebooks");
+        return saved ? JSON.parse(saved) : [
+            { id: "1", title: "New Notebook - 1", date: "2026-08-31", coverColor: "bg-indigo-900", folder: "My Notes" },
+        ];
+    });
 
-    const navigate = useNavigate();
-    const location = useLocation();
-    const email=location.state?.email;
+    const [folders, setFolders] = useState(() => {
+        const saved = localStorage.getItem("user_folders");
+        return saved ? JSON.parse(saved) : ["My Notes", "Gate Preparation"];
+    });
 
-    // useEffect(() => {
-    //     if(!email){
-    //         navigate("/");
-    //     }
-    // },[email,navigate]);
+    const [activeFolder, setActiveFolder] = useState(null);
+    const [folderToDelete, setFolderToDelete] = useState(null);
 
+    useEffect(() => {
+        localStorage.setItem("user_notebooks", JSON.stringify(notebooks));
+    }, [notebooks]);
+
+    useEffect(() => {
+        localStorage.setItem("user_folders", JSON.stringify(folders));
+    }, [folders]);
+
+    const handleCreateFolder = (folderName) => {
+        if (!folderName || folders.includes(folderName)) return;
+        setFolders(prev => [...prev, folderName]);
+    };
+
+    const confirmDeleteFolder = () => {
+        if (!folderToDelete) return;
+        setFolders(prev => prev.filter(f => f !== folderToDelete));
+        setNotebooks(prev => prev.map(n => n.folder === folderToDelete ? { ...n, folder: null } : n));
+        if (activeFolder === folderToDelete) setActiveFolder(null);
+        setFolderToDelete(null);
+    };
 
     return (
         <div className="flex h-screen w-screen bg-black text-white overflow-hidden">
+            <LeftSideBar
+                totalNotesCount={notebooks.length}
+                folders={folders}
+                onCreateFolder={handleCreateFolder}
+                onDeleteClick={(folder) => setFolderToDelete(folder)}
+                onSelectFolder={(folder) => setActiveFolder(folder)}
+                activeFolder={activeFolder}
+            />
 
-            {/* Left Sidebar */}
-              <LeftSideBar/>
-            {/* Main Content Area */}
             <main className="flex-1 flex flex-col bg-zinc-900 overflow-y-auto">
-
-                {/* Top Header Bar */}
                 <header className="h-16 border-b border-zinc-800 px-8 flex items-center justify-between bg-zinc-900/50 backdrop-blur-md sticky top-0 z-10">
-                    <h1 className="text-xl font-bold tracking-tight">All Notes</h1>
-
-                    <div className="flex items-center space-x-4">
-                        {/* Search Bar */}
-                        <SearchBar/>
-
-                        {/* New Notebook Button */}
-                        {/*<button className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-all flex items-center space-x-2 cursor-pointer shadow-lg shadow-indigo-600/20">*/}
-                        {/*    <span>+ New Notebook</span>*/}
-                        {/*</button>*/}
-                    </div>
+                    <span className="text-sm font-semibold text-zinc-300">
+                        {activeFolder ? `Folder: ${activeFolder}` : "All Notes"}
+                    </span>
                 </header>
 
-                {/* Notebooks Grid */}
-            <NoteCardGrid/>
+                <NoteCardGrid
+                    notebooks={notebooks}
+                    setNotebooks={setNotebooks}
+                    activeFolder={activeFolder}
+                />
             </main>
+
+            {folderToDelete && (
+                <DeleteFolderModal
+                    folderName={folderToDelete}
+                    onDelete={confirmDeleteFolder}
+                    onClose={() => setFolderToDelete(null)}
+                />
+            )}
         </div>
     );
 }
-
-
-
-export default Dashboard;

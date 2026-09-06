@@ -43,7 +43,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 
         String token= jwtUtil.generateToken(email);
-        String redirectUrl=  "http://localhost:5173/oauth-success?token=" + token;
+
+    String encodedName = java.net.URLEncoder.encode(name != null ? name : "User", java.nio.charset.StandardCharsets.UTF_8);
+    String encodedEmail = java.net.URLEncoder.encode(email != null ? email : "", java.nio.charset.StandardCharsets.UTF_8);
+
+    String redirectUrl = String.format("http://localhost:5173/oauth-success?token=%s&name=%s&email=%s", token, encodedName, encodedEmail);
+//        String redirectUrl=  "http://localhost:5173/oauth-success?token=" + token;
 
         getRedirectStrategy().sendRedirect(
                 request,
