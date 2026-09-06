@@ -20,7 +20,11 @@ function LeftSide(){
              }
          );
 
-         console.log(loginResponse.data);
+         const { token, email: userEmail, name: userName } = loginResponse.data;
+         localStorage.setItem("user_email", userEmail);
+         localStorage.setItem("user_name",userName);
+         localStorage.setItem("jwt_token", token);
+
          setTimeout(()=>{
             navigate("/dashboard",{
                state:{

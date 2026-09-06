@@ -71,6 +71,7 @@ public class AuthController {
         return ResponseEntity.ok().body(Map.of("message","User registered successfully!"));
     }
 
+    // loging in
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest){
         try {
@@ -79,7 +80,11 @@ public class AuthController {
                             , loginRequest.getPassword()));
 
         String token=jwtUtil.generateToken(loginRequest.getEmail());
-        return ResponseEntity.ok().body(Map.of("token",token));
+        Optional<UserEntity> userEntity=userRepository.findByEmail(loginRequest.getEmail());
+        UserEntity user=userEntity.get();
+        return ResponseEntity.ok().body(Map.of("token",token,
+                "email", user.getEmail(),
+                "name", user.getFullName() != null ? user.getFullName() : user.getEmail().split("@")[0]));
         }
         catch (Exception e){
             System.out.println("Auth Error: "+e.getClass().getName()+": "+e.getMessage());
