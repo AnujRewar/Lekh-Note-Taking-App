@@ -5,21 +5,28 @@ export default function ProfileMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
     const navigate = useNavigate();
-    const userEmail = localStorage.getItem("user_email") || "user@example.com";
-    const userName=localStorage.getItem("user_name")|| "User";
+    const userEmail = localStorage.getItem("user_email");
+    const userName=localStorage.getItem("user_name");
 
-//extract initials for avatar
+// Extract initials for avatar with safety fallback
     const getInitials = (email) => {
+        if (!email || typeof email !== "string") return "U";
         const namePart = email.split("@")[0];
         if (namePart.includes(".")) {
             const parts = namePart.split(".");
-            return (parts[0][0] + parts[1][0]).toUpperCase();
+            return (parts[0][0] + (parts[1]?.[0] || "")).toUpperCase();
         }
         return namePart.slice(0, 2).toUpperCase();
     };
     const userInitials = getInitials(userEmail);
 
-    // Close menu when clicking outside
+    useEffect(() => {
+        if (!userEmail) {
+            navigate("/", { replace: true });
+        }
+    }, [userEmail, navigate]);
+
+     // Close menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -31,9 +38,14 @@ export default function ProfileMenu() {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem("user_email");
-        navigate("/");
+        localStorage.clear();
+        navigate("/", { replace: true });
     };
+
+    // Prevent rendering anything if the email is missing while redirecting
+    if (!userEmail) {
+        return null;
+    }
 
     return (
         <div className="relative" ref={menuRef}>

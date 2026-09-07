@@ -1,10 +1,19 @@
 import { useNavigate } from "react-router-dom";
-import {useReactor} from "tldraw";
+import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
-    const userEmail=localStorage.getItem("user_email")|| "example@gmail.com";
-    const userName=localStorage.getItem("user_name") || "User Name";
+    const userEmail = localStorage.getItem("user_email") || "example@gmail.com";
+    const userName = localStorage.getItem("user_name") || "User Name";
+    const [isDriveConnected, setIsDriveConnected] = useState(false);
+
+    // Correctly placed at the top-level of the component
+    useEffect(() => {
+        const connectedStatus = localStorage.getItem("isDriveConnected");
+        if (connectedStatus === "yes") {
+            setIsDriveConnected(true);
+        }
+    }, []);
 
     return (
         <div className="flex h-screen w-screen bg-black text-white overflow-hidden justify-center items-center p-6">
@@ -35,9 +44,17 @@ export default function ProfilePage() {
                         <span className="text-zinc-500">Role</span>
                         <span className="text-zinc-200">User</span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-zinc-900">
+                    <div className="flex justify-between py-2 border-b border-zinc-900 items-center">
                         <span className="text-zinc-500">Cloud Storage Sync</span>
-                        <span className="text-emerald-400 flex items-center gap-1.5">● Google Drive Connected</span>
+                        {isDriveConnected ? (
+                            <span className="text-emerald-400 flex items-center gap-1.5 text-sm">
+                                ● Google Drive Connected
+                            </span>
+                        ) : (
+                            <span className="text-zinc-400 text-sm">
+                                Not Connected
+                            </span>
+                        )}
                     </div>
                 </div>
             </div>
