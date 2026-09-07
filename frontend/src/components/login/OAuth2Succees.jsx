@@ -10,6 +10,24 @@ export default function OAuthSuccess() {
         const name = searchParams.get("name");
         const email = searchParams.get("email");
 
+        const previousUser = localStorage.getItem("last_user");
+
+// If a previous user exists and it's different from the current login email
+        if (previousUser && previousUser !== email) {
+            localStorage.removeItem("google_drive_token");
+
+           //Clear all stored Drive file IDs because they belong
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith("drive_file_id_")) {
+                    localStorage.removeItem(key);
+                }
+            });
+        }
+
+        localStorage.setItem("last_user", email);
+
+
+
         if (token) {
             localStorage.setItem("jwt_token", token);
         }

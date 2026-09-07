@@ -2,53 +2,66 @@ import { useEffect, useState } from "react";
 import LeftSideBar from "./LeftSideBar.jsx";
 import NoteCardGrid from "./NoteCardGrid.jsx";
 import DeleteFolderModal from "./folderOnDashboard/DeleteFolderModal.jsx";
-
+import api from "../../api/api.jsx";
+import {useNavigate} from "react-router-dom";
 export default function Dashboard() {
-    const [notebooks, setNotebooks] = useState(() => {
-        const saved = localStorage.getItem("user_notebooks");
-        return saved ? JSON.parse(saved) : [
-            { id: "1", title: "New Notebook - 1", date: "2026-08-31", coverColor: "bg-indigo-900", folder: "My Notes" },
-        ];
-    });
+    const navigate=useNavigate();
 
-    const [folders, setFolders] = useState(() => {
-        const saved = localStorage.getItem("user_folders");
-        return saved ? JSON.parse(saved) : ["My Notes", "Gate Preparation"];
-    });
+ const [notebooks,setNotebooks] = useState([]);
+ const [folders,setFolder] = useState(["My Notes"]);
 
     const [activeFolder, setActiveFolder] = useState(null);
     const [folderToDelete, setFolderToDelete] = useState(null);
 
     useEffect(() => {
-        localStorage.setItem("user_notebooks", JSON.stringify(notebooks));
-    }, [notebooks]);
+       const fetchNotes = async () => {
+           try{
 
-    useEffect(() => {
-        localStorage.setItem("user_folders", JSON.stringify(folders));
-    }, [folders]);
+                   const email=localStorage.getItem('user_email');
+                   const token=localStorage.getItem('jwt_token');
+                   if(!email && !token){
+                       navigate("/");
+                   }
 
-    const handleCreateFolder = (folderName) => {
-        if (!folderName || folders.includes(folderName)) return;
-        setFolders(prev => [...prev, folderName]);
-    };
+                   const response=await api.get("/notes")
+               setNotebooks(response.data)
+           }
+           catch(error){
+               console.error("Failed to fetch notebooks", error);
+           }
+       };
+       fetchNotes();
+    }, []);
+    //
+    // useEffect(() => {
+    //     localStorage.setItem("user_folders", JSON.stringify(folders));
+    // }, [folders]);
 
-    const confirmDeleteFolder = () => {
-        if (!folderToDelete) return;
-        setFolders(prev => prev.filter(f => f !== folderToDelete));
-        setNotebooks(prev => prev.map(n => n.folder === folderToDelete ? { ...n, folder: null } : n));
-        if (activeFolder === folderToDelete) setActiveFolder(null);
-        setFolderToDelete(null);
-    };
+    // const handleCreateFolder = (folderName) => {
+    //     if (!folderName || folders.includes(folderName)) return;
+    //     setFolders(prev => [...prev, folderName]);
+    // };
+    //
+    // const confirmDeleteFolder = () => {
+    //     if (!folderToDelete) return;
+    //     setFolders(prev => prev.filter(f => f !== folderToDelete));
+    //     setNotebooks(prev => prev.map(n => n.folder === folderToDelete ? { ...n, folder: null } : n));
+    //     if (activeFolder === folderToDelete) setActiveFolder(null);
+    //     setFolderToDelete(null);
+    // };
 
     return (
         <div className="flex h-screen w-screen bg-black text-white overflow-hidden">
             <LeftSideBar
                 totalNotesCount={notebooks.length}
-                folders={folders}
-                onCreateFolder={handleCreateFolder}
-                onDeleteClick={(folder) => setFolderToDelete(folder)}
-                onSelectFolder={(folder) => setActiveFolder(folder)}
-                activeFolder={activeFolder}
+
+                      /* currently folder support is removed */
+
+                // folders={folders}
+                //  onCreateFolder={handleCreateFolder}
+                // onDeleteClick={(folder) => setFolderToDelete(folder)}
+                // onSelectFolder={(folder) => setActiveFolder(folder)}
+                // activeFolder={activeFolder}
             />
 
             <main className="flex-1 flex flex-col bg-zinc-900 overflow-y-auto">
@@ -65,13 +78,14 @@ export default function Dashboard() {
                 />
             </main>
 
-            {folderToDelete && (
-                <DeleteFolderModal
-                    folderName={folderToDelete}
-                    onDelete={confirmDeleteFolder}
-                    onClose={() => setFolderToDelete(null)}
-                />
-            )}
+            {/*{folderToDelete && (*/}
+            {/*    <DeleteFolderModal*/}
+            {/*        folderName={folderToDelete}*/}
+            {/*        onDelete={confirmDeleteFolder}*/}
+            {/*        onClose={() => setFolderToDelete(null)}*/}
+            {/*    />*/}
+            {/*)}*/}
+
         </div>
     );
 }

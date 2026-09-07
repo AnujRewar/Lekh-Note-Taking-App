@@ -4,6 +4,7 @@ import DeleteNotebook from "./notebook/DeleteNotebook.jsx";
 import CreateNotebook from "./notebook/CreateNotebook.jsx";
 import RenameNotebook from "./notebook/RenameNotebook.jsx";
 import SearchBar from "./SearchBar.jsx";
+import api from "../../api/api.jsx";
 
 export default function NoteCardGrid({ notebooks, setNotebooks }) {
     const navigate = useNavigate();
@@ -15,25 +16,29 @@ export default function NoteCardGrid({ notebooks, setNotebooks }) {
     const [editingId, setEditingId] = useState(null);
     const [editTitle, setEditTitle] = useState("");
 
-    const handleCreateNotebook = (e) => {
+    const handleCreateNotebook = async (e) => {
         e.preventDefault();
         if (!notebookTitle.trim()) return;
 
-        const newId = Date.now().toString();
         const colors = ["bg-indigo-900", "bg-blue-900", "bg-emerald-900", "bg-purple-900", "bg-rose-900"];
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
         const newNotebook = {
-            id: newId,
             title: notebookTitle.trim(),
-            date: new Date().toISOString().split("T")[0],
-            coverColor: randomColor
+            coverColor: randomColor,
+            folder:"All notes"
         };
-
-        setNotebooks(prev => [newNotebook, ...prev]);
-        setNotebookTitle("");
-        setIsModalOpen(false);
-        navigate(`/note/${newId}`);
+      try {
+          const response = await api.post("/notes", newNotebook);
+          const createResponse=response.data;
+          setNotebooks(prev => [createResponse, ...prev]);
+          setNotebookTitle("");
+          setIsModalOpen(false);
+          navigate(`/note/${createResponse.id}`);
+      }
+      catch (error) {
+          console.error("Failed to create note on server:", error);
+      }
     };
 
     const handleDeleteClick = (e, id) => {
@@ -41,20 +46,36 @@ export default function NoteCardGrid({ notebooks, setNotebooks }) {
         setDeleteNotebookId(id);
     };
 
-    const confirmDeleteNotebook = () => {
-        setNotebooks(prev => prev.filter(notebook => notebook.id !== deleteNotebookId));
-        localStorage.removeItem(`notebook_${deleteNotebookId}`);
-        setDeleteNotebookId(null);
+    const confirmDeleteNotebook = async () => {
+        try{
+            await api.delete(`/notes/${deleteNotebookId}`);
+            setNotebooks(prev => prev.filter(notebook => notebook.id !== deleteNotebookId));
+            localStorage.removeItem(`notebook_${deleteNotebookId}`);
+            setDeleteNotebookId(null);
+        }
+        catch (error) {
+            console.error("Failed to delete notebook:", error);
+        }
+
     };
 
-    const handleRenameSubmit = (e, id) => {
+    const handleRenameSubmit = async (e, id) => {
         e.stopPropagation();
         if (!editTitle.trim()) return;
-        setNotebooks(prev => prev.map(note =>
-            note.id === id ? { ...note, title: editTitle.trim() } : note
-        ));
-        setEditingId(null);
-        setEditTitle("");
+        try{
+            const response= await api.put(`/notes/${id}`, {
+                title: editTitle.trim()
+            });
+            const updatedNote=response.data;
+            setNotebooks(prev =>
+           prev.map(note=>note.id === id ?updatedNote : note)
+            );
+            setEditingId(null);
+            setEditTitle("");
+        }
+        catch (error) {
+            console.error("Failed to update note on server:", error);
+        }
     };
 
     const filteredNotebooks = notebooks.filter(note =>
