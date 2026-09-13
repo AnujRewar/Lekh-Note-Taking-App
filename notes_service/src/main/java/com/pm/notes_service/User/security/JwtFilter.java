@@ -1,6 +1,7 @@
 package com.pm.notes_service.User.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,6 +21,13 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // Skip JWT validation entirely for public authentication endpoints
+        String path = request.getServletPath();
+        return path.startsWith("/api/auth/");
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
       String authHeader= request.getHeader("Authorization");
@@ -29,13 +37,19 @@ public class JwtFilter extends OncePerRequestFilter {
           token=authHeader.substring(7);
       }
       if(token!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-          Claims claims = jwtUtil.verifySignatureAndExtractAllClaims(token);
+          try{
           if(!jwtUtil.isTokenExpired(token)){
+              Claims claims = jwtUtil.verifySignatureAndExtractAllClaims(token);
+
               UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                       = new UsernamePasswordAuthenticationToken(claims.getSubject(),null,null);
 
               usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
               SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+          }
+      }
+          catch(JwtException | IllegalArgumentException e){
+              logger.error("JWT validation failed: " + e.getMessage());
           }
       }
 

@@ -30,9 +30,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final SecurityConfig securityConfig;
     private final AuthenticationManager authenticationManager;
-    private final UserService userService;
     private final EmailService emailService;
     private final ForgetPasswordRepository forgetPasswordRepository;
 
@@ -106,7 +104,7 @@ public class AuthController {
         }
 
         UserEntity user = userOpt.get();
-        int otp=otpGenerator();
+        int otp=otpGenerator();  //otp generated
         MailBody mailBody= MailBody.builder()
                 .to(user.getEmail())
                 .text("This is the otp for your Password reset request: "+ otp+System.lineSeparator() +" Thanks for choosing Lekh.")
@@ -114,9 +112,10 @@ public class AuthController {
                 .build();
 
 
-        ForgetPassword fp;
 
         Optional<ForgetPassword> existingFp = forgetPasswordRepository.findByUser(user);
+        ForgetPassword fp;
+
 
         if (existingFp.isPresent()) {
             // Update the existing row instead of inserting a duplicate
@@ -132,7 +131,6 @@ public class AuthController {
                     .build();
         }
           emailService.sendSimpleMessage(mailBody);
-
           forgetPasswordRepository.save(fp);
 
           return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","OTP has been sent"));

@@ -63,7 +63,7 @@ function LeftSide(){
 
        <div className="h-full w-full flex flex-col justify-center bg-black px-6 py-10 sm:px-8 lg:px-12 xl:px-16">
 
-          <div className="mx-13 w-full max-w-110">
+          <div className="mx-auto w-full max-w-110">
 
              {/* Logo & Header */}
              <div>
@@ -189,11 +189,11 @@ function LeftSide(){
                    </div>
 
                    {/* Social Login Buttons */}
-                   <div className="mt-6 grid grid-cols-2 gap-3">
+                   <div className="mt-6 flex justify-center">
                       <div>
                          <a
-                             href="http://localhost:8080/oauth2/authorization/google"
-                             className=" ml-28 w-full inline-flex justify-center py-2 px-4 border border-gray-700 rounded-md shadow-sm bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700"
+                             href={import.meta.env.VITE_GOOGLE_LOGIN_LINK}
+                             className="w-full inline-flex justify-center items-center py-2 px-10 border border-gray-700 rounded-md shadow-sm bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors"
                          >
                             <span className="sr-only">Sign in with Google</span>
                             {/* Google SVG Icon */}

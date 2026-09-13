@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.UUID;
 
 
 @Service
@@ -23,6 +24,11 @@ public class UserService implements UserDetailsService {
     public UserEntity getUserFromUsername(String email){
         return userRepository.findByEmailAndIsActive(email,true)
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+    }
+
+    public UUID getUserIdFromEmail(String email){
+        UserEntity user=getUserFromUsername(email);
+        return user.getId();
     }
 
     @Override

@@ -3,7 +3,7 @@ import img1 from './images/login1.jpg';
 
 function RightSide() {
     return (
-        <div className="relative w-full h-full bg-zinc-950 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full h-full bg-zinc-950 flex items-center justify-center overflow-hidden py-12 lg:py-0">
 
             {/* LEFT SIDE BLUR - Adjusted to dynamically match the main card sizing */}
             <div className="absolute left-[calc(50%-230px)] md:left-[calc(50%-250px)] w-[300px] md:w-[380px] h-[400px] md:h-[500px] -rotate-2 pointer-events-none select-none">
