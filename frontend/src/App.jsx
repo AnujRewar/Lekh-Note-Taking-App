@@ -8,10 +8,11 @@ import VerifyEmail from "./components/register/VerifyEmail.jsx";
 import InsertPassword from "./components/changePassword/InsertPassword.jsx";
 import Dashboard from "./components/home/Dashboard.jsx";
 import NoteCanvas from "./components/editor/NoteCanvas.jsx";
-import "tldraw/tldraw.css";
 import ProfilePage from "./components/home/profile/ProfilePage.jsx";
 import SettingsPage from "./components/home/profile/SettingsPage.jsx";
 import OAuthSuccess from "./components/login/OAuth2Succees.jsx";
+import PrivacyPolicy from "./components/login/PrivacyAndTermsOfUse/PrivacyPolicy.jsx";
+import TermsOfUse from "./components/login/PrivacyAndTermsOfUse/TermsOfService.jsx";
 const App = () =>{
   return (
       <BrowserRouter>
@@ -24,6 +25,8 @@ const App = () =>{
           {/*Registration*/}
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail/>} />
+          <Route path="/privacy_policy" element={<PrivacyPolicy/>} />
+          <Route path="/terms_of_use" element={<TermsOfUse/>}/>
 
           {/*Change Password*/}
       <Route path="/insert-email" element={<InsertEmail />} />
@@ -37,6 +40,7 @@ const App = () =>{
 
           {/* Canva */}
       <Route path="/note/:id" element={ <NoteCanvas /> } />
+
 
 
       </Routes>

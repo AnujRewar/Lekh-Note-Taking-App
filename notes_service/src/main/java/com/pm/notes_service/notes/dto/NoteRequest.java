@@ -9,4 +9,5 @@ public class NoteRequest {
     private UUID userId;
     private String title;
     private String content;
+    private String fileType;
 }

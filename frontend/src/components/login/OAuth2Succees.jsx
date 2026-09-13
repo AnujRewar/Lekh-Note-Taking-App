@@ -24,18 +24,21 @@ export default function OAuthSuccess() {
             });
         }
 
-        localStorage.setItem("last_user", email);
 
 
+
+        if(email) {
+            localStorage.setItem("last_user", email);
+        }
 
         if (token) {
             localStorage.setItem("jwt_token", token);
         }
         if (name) {
-            localStorage.setItem("user_name", decodeURIComponent(name));
+            localStorage.setItem("user_name", name);
         }
         if (email) {
-            localStorage.setItem("user_email", decodeURIComponent(email));
+            localStorage.setItem("user_email", email);
         }
 
         // Redirect to dashboard after saving

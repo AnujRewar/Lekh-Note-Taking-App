@@ -1,8 +1,10 @@
 package com.pm.notes_service.User.security;
 
 import com.pm.notes_service.User.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,12 +25,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.lang.model.element.VariableElement;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     private final UserService userService;
 
@@ -40,12 +47,17 @@ public class SecurityConfig {
                 .cors(cors ->cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 //Make the session stateless for REST APIs
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth->
-                            auth.requestMatchers("/api/auth/**").permitAll()
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth-> auth
+                        .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                //Secure all endpoints
-                .anyRequest().authenticated())
+                        .anyRequest().authenticated() //Secure all endpoints
+                        )
+                .exceptionHandling(exception->exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                                })
+                        )
                 .oauth2Login(oauth2Login -> oauth2Login.successHandler(oAuth2SuccessHandler))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();   //We will add the JwtReuestFilter here to intercept secure requests
@@ -70,13 +82,18 @@ public class SecurityConfig {
     }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
-            corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            corsConfiguration.setAllowedHeaders(List.of("*"));
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Allow your Vite React frontend origin
+        configuration.setAllowedOrigins(List.of(frontendUrl));
+        // Allow standard HTTP methods including PATCH
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        // Allow headers (like Authorization for your JWT token)
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowCredentials(true);
 
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", corsConfiguration);
-            return source;
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Apply CORS to all /api/** paths
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
     }
 }
